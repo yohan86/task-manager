@@ -1,29 +1,53 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Snackbar, Box, TextField, Button, Grid2 } from '@mui/material';
 import TaskList from './../components/TaskList';
 
 const TaskManager = () => {
     const [task, setTask] = useState('');
-    const [taskList, setTaskList] = useState([]);
+    const [taskList, setTaskList] = useState({});
+
+
+    useEffect(() => {
+        const savedTasks = localStorage.getItem('tasks')
+        if(savedTasks){
+            setTaskList(JSON.parse(savedTasks));
+        }
+    }, [])
+
+    useEffect(() => {
+        if(Object.keys(taskList).length > 0 ) {
+            localStorage.setItem('tasks', JSON.stringify(taskList));
+        }
+    }, [taskList])
 
     const addTasks = () => {
         if (task.trim()) {
-            setTaskList([...taskList, task]);
+            const newIndex = Date.now();
+        
+            setTaskList((prev)=>{
+                const updatedTaskList = { ...prev, [newIndex]:{ name:task, priority:'Low' }, }
+                return updatedTaskList;
+            })
+
             setTask('');
         }
     }
     const handleDeleteTask = (deleteItem) => {
-        setTaskList(taskList.filter(task => task !== deleteItem));
+        //setTaskList(taskList.filter(task => task !== deleteItem));
+
+        setTaskList((prev)=>{
+            const deletearr = {...prev};
+            delete deletearr[deleteItem];
+            return deletearr;
+        })
     }
 
-    const handleUpdateTask = (editItem, task) => {
-        let tempTaskarr = [...taskList];
-        let findIndex = tempTaskarr.indexOf(editItem);
-        tempTaskarr[editItem] = task;
-        setTaskList(tempTaskarr);
+    const handleUpdateTask = (editItem, task, updatedPriority) => {
+        setTaskList((prev)=>({
+            ...prev,
+            [editItem]: { name: task, priority: updatedPriority },
+        }));
     }
-
-
 
     return (
         <>
@@ -46,8 +70,10 @@ const TaskManager = () => {
                 </Button>
                 </Grid2>
             </Grid2>
+     
             <Box sx={{ width: 600, margin: '0 auto' }}>
-                {taskList && taskList.length > 0 ?
+                {Object.keys(taskList).length > 0 && <Box>Active Tasks:{Object.keys(taskList).length }</Box>}
+                {taskList && Object.keys(taskList).length > 0 ?
                     <TaskList taskList={taskList} onDelete={handleDeleteTask} onEdit={handleUpdateTask}  />
                     : <Alert severity="info">
                         No Task Added So far
