@@ -1,9 +1,14 @@
 import logo from './logo.svg';
 import './App.css';
 import { useEffect, useState } from 'react';
-import { ThemeProvider, createTheme }  from '@mui/material';
+import { ThemeProvider, createTheme, Box, Button }  from '@mui/material';
 import LoginPage from './pages/LoginPage';
 import TaskManager from './pages/TaskManager';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './components/firebase';
+import AuthForm from './components/AuthForm';
+import Header from './components/Header';
+
 
 const theme = createTheme({
   components: {
@@ -24,41 +29,36 @@ const theme = createTheme({
   }
 })
 
-
-
 function App() {
   const [loggedIn, setLoggedIn] = useState(null);
-  const handleLogin =() => {
-    localStorage.setItem('IsLoggedIn', 'true');
-    
-    setLoggedIn(true);
+  const [user, setUser] = useState(null);
+  const [firstName, setFirstName] = useState(null);
 
-  }
-  useEffect(()=>{
-    const loggedInStats = localStorage.getItem('IsLoggedIn');
-    if(loggedInStats === 'true'){
-      setLoggedIn(true);
-    }else{
-      setLoggedIn(false);
-    }
+
+  useEffect(()=> {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if(user){
+        setUser(user);
+      }else{
+        setUser(null);
+        setFirstName(null);
+      }
+    });
+    return () => unsubscribe();
   }, [])
 
- 
-  const deleteuser = () => {
-    localStorage.removeItem('IsLoggedIn');
-    localStorage.removeItem('username');
-    setLoggedIn(false);
-  }
-
-  if(loggedIn === null){
-    return <div>Loading...</div>
-  }
+  useEffect(() => {
+    if(user && typeof user.displayName ==='string' ){
+      const name = user.displayName.split(' ')[0];
+      setFirstName(name);
+    }
+  },[user])
 
   return (
     <ThemeProvider theme={theme}>
     <div className="App">
-      {!loggedIn?(<LoginPage onLogin={handleLogin}/>) 
-      : (<><TaskManager /><button onClick={deleteuser}>Log out</button></>)}
+      <Header userName={firstName} />
+      {user ? (<TaskManager />): <AuthForm />}
     </div>
     </ThemeProvider>
   );

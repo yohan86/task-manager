@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { Alert, Snackbar, Box, TextField, Button, Grid2 } from '@mui/material';
+import { Alert, Snackbar, Box, TextField, Button, Grid2 , Typography } from '@mui/material';
 import TaskList from './../components/TaskList';
 import { FilterTiltShift } from '@mui/icons-material';
 import CompletedTaskList from './../components/CompletedTaskList';
@@ -9,7 +9,7 @@ const migrateTasksV1ToV2= (migTaskList) => {
     return Object.keys(migTaskList).reduce((list, key) => {
         const listItem = migTaskList[key];
         if(!listItem.dueDate){
-            listItem.dueDate = 'No due date';
+            listItem.dueDate = null;
         }
         list[key] = listItem;
         return list;
@@ -21,7 +21,7 @@ const TaskManager = () => {
     const localStorageDebounce = useRef(null);
     const [taskList, setTaskList] = useState({});
 
-
+//for only migration
     useEffect(() => {
         const savedTasks = localStorage.getItem('tasks');
         const savedVersion = localStorage.getItem('taskVersion') || '1';
@@ -53,7 +53,7 @@ const TaskManager = () => {
             const newIndex = Date.now();
         
             setTaskList((prev)=>{
-                const updatedTaskList = { ...prev, [newIndex]:{ name:task, priority:'Low', status:'active', dueDate:'' }, }
+                const updatedTaskList = { ...prev, [newIndex]:{ name:task, priority:'Low', status:'active', dueDate:null }, }
                 return updatedTaskList;
             })
 
@@ -119,10 +119,16 @@ const TaskManager = () => {
 
         })
     }
+    const deleteuser = () => {
+
+    }
 
     return (
         <>
+       
+        
             <Grid2 container sx={{ maxWidth: 600, margin: '25px auto' }} alignItems='center' spacing={2}>
+               
                 <Grid2 size={9}><TextField
                     label='Task Name'
                     fullWidth
@@ -154,6 +160,9 @@ const TaskManager = () => {
             <Box sx={{ width: 600, margin: '0 auto' }}>
                 <Box component="h2" sx={{color:'#476689', borderBottom:'2px solid #476689', paddingBlock:2}}>Completed Tasks</Box>
                 <CompletedTaskList taskList={filterCompletedItems()} onDelete={deleteCompletedItem} />
+            </Box>
+            <Box>
+                <button onClick={deleteuser}>Log out</button>
             </Box>
 
         </>
