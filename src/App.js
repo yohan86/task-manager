@@ -2,7 +2,6 @@ import logo from './logo.svg';
 import './App.css';
 import { useEffect, useState } from 'react';
 import { ThemeProvider, createTheme, Box, Button }  from '@mui/material';
-import LoginPage from './pages/LoginPage';
 import TaskManager from './pages/TaskManager';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './components/firebase';
@@ -34,30 +33,27 @@ function App() {
   const [user, setUser] = useState(null);
   const [firstName, setFirstName] = useState(null);
 
-
   useEffect(()=> {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if(user){
-        setUser(user);
+    const loginStatus =  onAuthStateChanged( auth, (current) => {
+      if(current){
+        const addedUser = current.displayName || current.email;
+        setUser(addedUser);
+        console.log('aaaa', current.displayName)
       }else{
         setUser(null);
-        setFirstName(null);
       }
-    });
-    return () => unsubscribe();
+      
+    }) 
+    console.log('sdsd', user)
+    return ()=> loginStatus;
   }, [])
 
-  useEffect(() => {
-    if(user && typeof user.displayName ==='string' ){
-      const name = user.displayName.split(' ')[0];
-      setFirstName(name);
-    }
-  },[user])
+ 
 
   return (
     <ThemeProvider theme={theme}>
     <div className="App">
-      <Header userName={firstName} />
+      <Header userName={user} />
       {user ? (<TaskManager />): <AuthForm />}
     </div>
     </ThemeProvider>

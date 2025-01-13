@@ -104,7 +104,7 @@ const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
                         <StyledListItem key={index} sx={{ display: 'block', boxShadow: 8 }} >
                             <Box display='inline-block'
                                 sx={{ fontSize: 12, backgroundColor: setBgColor(task.priority), padding: '2px 10px 3px', borderRadius: 5 }}>
-                                {task.priority}{task.status}
+                                {task.priority}
                             </Box>
 
                             <Box sx={{ display: 'flex', alignItems: 'center' }}>

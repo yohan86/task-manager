@@ -16,7 +16,7 @@ const Header = ({userName}) => {
 
     return (
         <Box
-            container
+            
             sx={{
                 height: '50px',
                 display: 'flex',

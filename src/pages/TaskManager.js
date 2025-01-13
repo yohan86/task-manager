@@ -16,7 +16,7 @@ const migrateTasksV1ToV2= (migTaskList) => {
     },{});
 }
 
-const TaskManager = () => {
+const TaskManager = ({user}) => {
     const [task, setTask] = useState('');
     const localStorageDebounce = useRef(null);
     const [taskList, setTaskList] = useState({});
@@ -128,7 +128,7 @@ const TaskManager = () => {
        
         
             <Grid2 container sx={{ maxWidth: 600, margin: '25px auto' }} alignItems='center' spacing={2}>
-               
+            
                 <Grid2 size={9}><TextField
                     label='Task Name'
                     fullWidth

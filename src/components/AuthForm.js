@@ -1,129 +1,126 @@
-import { useState } from 'react';
-import { signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, updateProfile  } from 'firebase/auth';
-import { auth, GoogleAuthProvider } from './firebase';
-import { Button, Typography, Box, Container, TextField } from '@mui/material';
+import { useEffect, useState } from "react";
+import { Box, Button, TextField, Typography } from "@mui/material";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { auth } from "./firebase";
 
 const AuthForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [isLogin, setIsLogin] = useState(true); // Toggle between login and registration
-  const [error, setError] = useState('');
-  const [displayName, setDisplayName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [viewLogin, setViewLogin] = useState(true);
+    const [displayName, setDisplayName] = useState(null);
 
-  // Handle Google Sign-In
-  const handleGoogleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      setError('Failed to sign in with Google');
-    }
-  };
+    const registerPerson = async () => {
+        try {
+            const createUser = await createUserWithEmailAndPassword(auth, email, password);
+            console.log('done');
+            const user = createUser.user;
+            if (displayName === null) {
+                setDisplayName(user.email);
+            }
+            console.log('usr', user)
+            await updateProfile(user, { displayName });
 
-  // Handle Email and Password login or registration
-  const handleEmailPasswordSubmit = async (e) => {
-    e.preventDefault();
-    setError(''); // Clear any previous error message
 
-    try {
-      if (isLogin) {
-        // Log in with email and password
-        await signInWithEmailAndPassword(auth, email, password);
-      } else {
-        // Register with email and password
-        await createUserWithEmailAndPassword(auth, email, password);
-        const userCredential = auth.currentUser; 
-        if(displayName){
-            await updateProfile(userCredential, {
-                displayName:displayName,
-            });
-        }
-      }
-    } catch (error) {
 
-      switch(error.code){
-        case 'auth/weak-password':
-            setError('Password should be at least 6 characters');
-        default:
+        } catch (error) {
             setError(error.message);
-      }
+        }
     }
-  }
 
+    const loginUser = async () => {
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            console.log("user logged In", email)
+        } catch (error) {
+            setError(error.message);
+        }
+    }
+    const SubmitForm = () => {
+        if (viewLogin) {
+            loginUser();
+        } else {
+            registerPerson();
+        }
 
+    }
 
+    return (
+        <>
+            <Box container='true'
+                sx={{
+                    width: '370px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '30px auto'
+                }}>
+                <Typography variant='h3' fontSize='25px' marginBottom='20px'>
+                    {viewLogin ? 'Sign In' : 'Sign Up'}
+                </Typography>
 
+                {error && <Box sx={{ color: '#ff0000' }}>{error}</Box>}
 
+                {!viewLogin && (
+                    <>
+                        <TextField
+                            fullWidth
+                            variant='outlined'
+                            label='Display Name'
+                            value={displayName}
+                            onChange={(e) => setDisplayName(e.target.value)}
+                        />
+                    </>
+                )}
+                <TextField
+                    fullWidth
+                    variant='outlined'
+                    type='email'
+                    label='Email'
+                    margin='normal'
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    gap='2'
+                />
+                <TextField
+                    fullWidth
+                    variant='outlined'
+                    type='password'
+                    label='Password'
+                    margin='normal'
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                <Button
+                    variant='contained'
+                    color='primary'
+                    onClick={SubmitForm}
+                    sx={{ marginTop: '15px' }}
+                >
+                    {viewLogin ? 'Login' : 'Register'}
+                </Button>
 
-  return (
-    <Container maxWidth="xs" sx={{ padding: 3 }}>
-      <Typography variant="h4" gutterBottom align="center">
-        {isLogin ? 'Log In' : 'Register'}
-      </Typography>
+                <Box onClick={() => setViewLogin(!viewLogin)} marginTop='10px' >
+                    {viewLogin ?
+                        <Box sx={{ display: 'flex' }}>
+                            Don't have an account?
+                            <Box sx={{ color: '#1565c0', marginLeft: '5px', cursor: 'pointer' }}>
+                                Sign Up
+                            </Box>
+                        </Box> :
+                        <Box sx={{ display: 'flex' }}>
+                            Already have an account?
+                            <Box sx={{ color: '#1565c0', marginLeft: '5px', cursor: 'pointer' }}>
+                                Login
+                            </Box>
+                        </Box>
+                    }
+                </Box>
 
-      {/* Display any error messages */}
-      {error && <Typography color="error" variant="body2" align="center">{error}</Typography>}
-
-      {/* Email and Password Form */}
-      {!isLogin && (
-        <Box component="form" 
-             onSubmit={handleEmailPasswordSubmit} 
-             sx={{ display: 'flex', flexDirection: 'column' }}
-        >
-            <TextField 
-                label='Display Name' 
-                type='text' 
-                variant='outlined' 
-                fullWidth 
-                value={displayName} 
-                onChange={(e) => setDisplayName(e.target.value)}
-            />
-            <TextField
-                label="Email"
-                type="email"
-                variant="outlined"
-                fullWidth
-                margin="normal"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-            />
-          <TextField
-            label="Password"
-            type="password"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <Button variant="contained" color="primary" type="submit" sx={{ marginTop: 2 }}>
-            {isLogin ? 'Log In' : 'Register'}
-          </Button>
-        </Box>
-      )}
-
-      {/* Google Sign-In Button */}
-      <Box sx={{ textAlign: 'center', marginTop: 2 }}>
-        <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          onClick={handleGoogleSignIn}
-        >
-          Sign In with Google
-        </Button>
-      </Box>
-
-      {/* Toggle between login and register */}
-      <Box sx={{ textAlign: 'center', marginTop: 2 }}>
-        <Button color="secondary" onClick={() => setIsLogin(!isLogin)}>
-          {isLogin ? 'Need an account? Register' : 'Already have an account? Log In'}
-        </Button>
-      </Box>
-    </Container>
-  );
-};
+            </Box>
+        </>
+    )
+}
 
 export default AuthForm;
