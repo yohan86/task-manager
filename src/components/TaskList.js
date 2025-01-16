@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef } from 'react';
 import {
     Grid2, Box, IconButton, List, ListItem, ListItemText, Collapse, TextField, Button, FormControl,
-    Select, MenuItem, InputLabel, Checkbox, FormControlLabel, checkboxClasses
+    Select, MenuItem, InputLabel, Checkbox, FormControlLabel, checkboxClasses, Dialog, DialogActions,DialogContent, DialogTitle
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -14,7 +14,8 @@ import CloseIcon from '@mui/icons-material/Close';
 const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
     const [editTaskList, setEditTaskList] = useState({});
     const [isEditing, SetIsEditing] = useState({});
-    const [date, setDate] = useState(dayjs());
+    const [openDeletePopup, setOpenDeletePopup] = useState(false);
+    const [taskToDelete, setTaskToDelete] = useState(null);
     const priorities = ["Low", "Medium", "High"];
 
     const setBgColor = (priorityVal) => {
@@ -103,7 +104,25 @@ const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
         
     }
 
+
+    const handleDeletePopup= (index) => {
+        setOpenDeletePopup(true);
+        setTaskToDelete(index);
+    }
+    const handleDelete = () => {
+        setOpenDeletePopup(false);
+        onDelete(taskToDelete);
+        setTaskToDelete(null);
+    }
+    const handleDeletePopupCancel = () => {
+        setOpenDeletePopup(false);
+        setTaskToDelete(null);
+    }
+
+
+
     return (
+        <>
         <List>
             {
                 Object.keys(taskList).map((index) => {
@@ -157,7 +176,7 @@ const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
                                     <Edit sx={{ fontSize: 18, fill: '#544848', '&:hover': { fill: '#fff' } }} />
                                 </IconButton>
 
-                                <IconButton edge='end' onClick={() => onDelete(index)} >
+                                <IconButton edge='end' onClick={() => handleDeletePopup(index)} >
                                     <Delete sx={{ fontSize: 18, fill: '#db4242', '&:hover': { fill: '#fff' } }} />
                                 </IconButton>
                                 </Box>
@@ -246,8 +265,29 @@ const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
             
 
         </List>
-    )
 
+        <Dialog open={openDeletePopup} sx={{borderRadius:'5px', '& .MuiDialog-paper':{width:'300px', paddingBottom:'10px'}}}>
+            <DialogTitle 
+            sx={{
+                background:'#6193cc', 
+                color:'#fff',
+                padding:'6px 10px',
+                fontSize:'16px'
+                }}>
+                Confirm Delete
+            </DialogTitle>
+            <DialogContent sx={{margin:'20px 0 10px', fontSize:'14px'}}>
+                Are you sure you want to delete this task? This action can not be undone.
+            </DialogContent>
+            <DialogActions sx={{justifyContent:'center'}}>
+                <Button onClick={handleDeletePopupCancel} sx={{color:'#fff', fontSize:'12px', background:'#6193cc', padding:'2px 10px'}}>Cancel</Button>
+                <Button onClick={handleDelete} sx={{color:'#fff', fontSize:'12px', background:'#f02323', padding:'2px 10px'}}>Yes, Delete</Button>
+            </DialogActions>
+        </Dialog>
+
+    </>
+    )
+ 
 }
 
 export default TaskList;
