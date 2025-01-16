@@ -128,9 +128,15 @@ const TaskManager = ({user}) => {
         <>
        
         
-            <Grid2 container sx={{ maxWidth: 600, margin: '25px auto' }} alignItems='center' spacing={2}>
+            <Grid2 container 
+            sx={{ maxWidth: 600, margin: '25px auto', padding:'0 25px' }} 
+            alignItems='center' 
+            spacing={2}
             
-                <Grid2 size={9}><TextField
+            >
+            
+            <Grid2 size={{ xs:12, sm:12, md:9 }}>
+                <TextField
                     label='Task Name'
                     fullWidth
                     value={task}
@@ -139,17 +145,17 @@ const TaskManager = ({user}) => {
 
                 ></TextField>
                 </Grid2>
-                <Grid2 size={3}><Button
+                <Grid2  size={{ xs:12, sm:12, md:3 }}><Button
                     variant='contained'
                     color='primary'
-                    sx={{ height: 46, width: '100%' }}
+                    sx={{ height:{xs:35, md: 46}, width: '100%' }}
                     onClick={addTasks}
                 >Add Task
                 </Button>
                 </Grid2>
             </Grid2>
      
-            <Box sx={{ width: 600, margin: '0 auto' }}>
+            <Box sx={{ width:'95%', maxWidth:600, margin: '0 auto' }}>
                 {Object.keys(filterActiveItems()).length > 0 && <Box>Active Tasks:{Object.keys(filterActiveItems()).length }</Box>}
                 {taskList && Object.keys(filterActiveItems()).length > 0 ?
                     <TaskList taskList={filterActiveItems()} onDelete={handleDeleteTask} onEdit={handleUpdateTask} onCompleted={handleCompleted}  />
@@ -159,14 +165,18 @@ const TaskManager = ({user}) => {
                 }
             </Box>
             {Object.keys(filterCompletedItems()).length > 0 && 
-                <Box sx={{ width: 600, margin: '0 auto' }}>
-                    <Box component="h2" sx={{color:'#476689', borderBottom:'2px solid #476689', paddingBlock:2}}>Completed Tasks</Box>
+                <Box sx={{ width:'95%', maxWidth:600, margin: '0 auto' }}>
+                    <Box 
+                    component="h2" 
+                    sx={{color:'#476689', 
+                        borderBottom:'2px solid #476689', 
+                        paddingBlock:2,
+                        fontSize:{xs:18, md:25}
+                    }}>
+                        Completed Tasks</Box>
                     <CompletedTaskList taskList={filterCompletedItems()} onDelete={deleteCompletedItem} />
                 </Box>
             }
-            <Box>
-                <button onClick={deleteuser}>Log out</button>
-            </Box>
 
         </>
     )

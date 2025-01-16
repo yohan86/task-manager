@@ -146,7 +146,7 @@ const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
                             </Box>
                             
                             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #fff' }}>
-                                <Box>Due Date: {dayjs(task.dueDate).isValid()? task.dueDate :'No' }</Box>
+                                <Box sx={{fontSize:{xs:12, md:14}}}>Due Date: {dayjs(task.dueDate).isValid()? task.dueDate :'No' }</Box>
                                 <Box>
                                 <FormControlLabel 
                                     sx={{ 
@@ -167,17 +167,18 @@ const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
                                     label="Completed"
                                     labelPlacement="end"
                                 />
-                                <IconButton onClick={() => handleEdit(index, task)} sx={{
-                                    display: editTaskList[index] ? 'none' : 'inline-flex', fontSize: 15,
+                                <IconButton onClick={() => handleEdit(index, task)} 
+                                sx={{
+                                    display: editTaskList[index] ? 'none' : 'inline-flex', padding:{xs:0}
                                 }}
                                     aria-label='edit'
                                     color='secondary'
                                 >
-                                    <Edit sx={{ fontSize: 18, fill: '#544848', '&:hover': { fill: '#fff' } }} />
+                                    <Edit sx={{ fontSize:{xs:20, sm:15, md:15}, fill: '#544848', '&:hover': { fill: '#fff' } }} />
                                 </IconButton>
 
-                                <IconButton edge='end' onClick={() => handleDeletePopup(index)} >
-                                    <Delete sx={{ fontSize: 18, fill: '#db4242', '&:hover': { fill: '#fff' } }} />
+                                <IconButton edge='end' onClick={() => handleDeletePopup(index)} sx={{padding:{xs:1}}} >
+                                    <Delete sx={{ fontSize:{xs:20, sm:18, md:18}, fill: '#db4242', '&:hover': { fill: '#fff' } }} />
                                 </IconButton>
                                 </Box>
                             </Box>
@@ -204,7 +205,7 @@ const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
                                                 '& input':{color:'#fff'} 
                                             }}
                                         />
-                                        <Box sx={{display:'flex', margin:'20px 0'}}>
+                                        <Box sx={{display:'flex', flexDirection:{xs:'column', md:'row'}, margin:'20px 0'}}>
                                         <FormControl variant='outlined'>
                                             <InputLabel sx={{ color:'#181010', fontSize:'17px' }}>Priority</InputLabel>
                                             <Select
@@ -213,8 +214,8 @@ const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
                                                 label="Priority"
                                                 sx={{
                                                     color:'#fff', 
-                                                    width:'230px',
-                                                    marginRight:'10px',
+                                                    width:{xs:'100%', md:'230px'},
+                                                    marginRight:{xs:'0', md:'10px'},
                                                     '& label':{color:'#181010', fontSize:'17px'},
                                                     '& .MuiSelect-select':{padding:'11.5px'}, 
                                                     '& .MuiSelect-icon':{color:'#fff'}}}
@@ -239,7 +240,9 @@ const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
                                                     console.log(due)
                                                 }}
                                                 sx={{
-                                                    marginLeft:'25px', 
+                                                    width:{xs:'100%', md:'230px'},
+                                                    marginLeft:{xs:'0', md:'25px'},
+                                                    marginTop:{xs:'25px', md:0},
                                                     '& label':{color:'#181010', fontSize:'17px'}, 
                                                     '& input':{color:'#fff'}, 
                                                     '& .MuiIconButton-root':{color:'#fff'}

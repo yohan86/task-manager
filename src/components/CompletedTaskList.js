@@ -15,7 +15,7 @@ return (
         Object.keys(taskList).map((index) => {
             const task = taskList[index];
             return (
-                <ListItem sx={{border:'1px solid #ccc', borderRadius:3, marginBottom:2}}>
+                <ListItem key={index} sx={{border:'1px solid #ccc', borderRadius:3, marginBottom:2}}>
                     <ListItemText primary={task.name} />
                     <IconButton onClick={() =>deleteCompletedTask(index)}>
                         <Delete sx={{ fontSize:18, fill:'#ccc', '&:hover':{fill:'#ff0000'}}}/>
