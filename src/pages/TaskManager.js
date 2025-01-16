@@ -93,11 +93,12 @@ const TaskManager = ({user}) => {
         })
     }
 
-    const handleUpdateTask = (editItem, task, updatedPriority, status) => {
+    const handleUpdateTask = (editItem, task, updatedPriority, status, dueDate) => {
         setTaskList((prev)=>({
             ...prev,
-            [editItem]: { name: task, priority: updatedPriority, status:status },
+            [editItem]: { name: task, priority: updatedPriority, status:status, dueDate:dueDate },
         }));
+        console.log('aaa', dueDate)
     }
 
 
@@ -157,10 +158,12 @@ const TaskManager = ({user}) => {
                     </Alert>
                 }
             </Box>
-            <Box sx={{ width: 600, margin: '0 auto' }}>
-                <Box component="h2" sx={{color:'#476689', borderBottom:'2px solid #476689', paddingBlock:2}}>Completed Tasks</Box>
-                <CompletedTaskList taskList={filterCompletedItems()} onDelete={deleteCompletedItem} />
-            </Box>
+            {Object.keys(filterCompletedItems()).length > 0 && 
+                <Box sx={{ width: 600, margin: '0 auto' }}>
+                    <Box component="h2" sx={{color:'#476689', borderBottom:'2px solid #476689', paddingBlock:2}}>Completed Tasks</Box>
+                    <CompletedTaskList taskList={filterCompletedItems()} onDelete={deleteCompletedItem} />
+                </Box>
+            }
             <Box>
                 <button onClick={deleteuser}>Log out</button>
             </Box>

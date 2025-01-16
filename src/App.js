@@ -29,7 +29,7 @@ const theme = createTheme({
 })
 
 function App() {
-  const [loggedIn, setLoggedIn] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [firstName, setFirstName] = useState(null);
 
@@ -39,6 +39,7 @@ function App() {
         const addedUser = current.displayName || current.email;
         setUser(addedUser);
         console.log('aaaa', current.displayName)
+        setLoading(false);
       }else{
         setUser(null);
       }
@@ -48,7 +49,9 @@ function App() {
     return ()=> loginStatus;
   }, [])
 
- 
+ if(loading){
+  return <Box sx={{width:'100vw', height:'100vh', display:'flex', justifyContent:'center', alignItems:'center', fontSize:'18px', fontWeight:'bold'}}>Loading, please wait!!!</Box>
+ }
 
   return (
     <ThemeProvider theme={theme}>
