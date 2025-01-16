@@ -31,21 +31,22 @@ const theme = createTheme({
 function App() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  const [firstName, setFirstName] = useState(null);
 
   useEffect(()=> {
+
     const loginStatus =  onAuthStateChanged( auth, (current) => {
       if(current){
         const addedUser = current.displayName || current.email;
         setUser(addedUser);
-        console.log('aaaa', current.displayName)
+        
         setLoading(false);
       }else{
         setUser(null);
       }
       
+      setLoading(false);
     }) 
-    console.log('sdsd', user)
+
     return ()=> loginStatus;
   }, [])
 
@@ -57,7 +58,7 @@ function App() {
     <ThemeProvider theme={theme}>
     <div className="App">
       <Header userName={user} />
-      {user ? (<TaskManager />): <AuthForm />}
+      {user=== null ? <AuthForm />  : <TaskManager />}
     </div>
     </ThemeProvider>
   );
