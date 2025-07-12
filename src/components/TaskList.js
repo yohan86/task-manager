@@ -10,6 +10,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import StyledListItem from './Styled';
 import dayjs from 'dayjs';
 import CloseIcon from '@mui/icons-material/Close';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { ProviderId } from 'firebase/auth';
 
 const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
     const [editTaskList, setEditTaskList] = useState({});
@@ -119,17 +121,41 @@ const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
         setTaskToDelete(null);
     }
 
+    //drag and drop
+    const handleDraggOn = (result) => {
+        const {destination, source } = result;
+
+        if(!destination) return
+        const reArrangedTasks =  Array.from(taskList);
+        const [draggItem] = reArrangedTasks.splice(source.index, 1);
+        reArrangedTasks.splice(destination.index, 0, draggItem);
+
+        onEdit(reArrangedTasks);
+    }
 
 
     return (
         <>
-        <List>
+        <DragDropContext onDragEnd={handleDraggOn}>
+        <Droppable droppableId='taskList' isDropDisabled={false}>
+        {(provided) => ( 
+        <List
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+        >
             {
                 Object.keys(taskList).map((index) => {
                     const task = taskList[index];
                     
                         return (
-                        <StyledListItem key={index} sx={{ display: 'block', boxShadow: 8 }} >
+                        <Draggable key={index} draggableId={JSON.stringify(index)} index={index}>
+                        {(provided) => (
+                        
+                        <StyledListItem 
+                            ref = {provided.innerRef}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            key={index} sx={{ display: 'block', boxShadow: 8 }} >
                             <Box display='inline-block'
                                 sx={{ 
                                     fontSize: 12, 
@@ -260,14 +286,23 @@ const TaskList = ({ taskList, onDelete, onEdit, onCompleted }) => {
                                     </Box>
                                 </Collapse>
                             }
+                       
+                        </StyledListItem>
+                        
+                            
+                    )}
 
-                        </StyledListItem>)
+                    </Draggable>)
                 })
             
             }
             
-
+            {provided.placeholder}
         </List>
+        )}
+
+        </Droppable>
+        </DragDropContext>
 
         <Dialog open={openDeletePopup} sx={{borderRadius:'5px', '& .MuiDialog-paper':{width:'300px', paddingBottom:'10px'}}}>
             <DialogTitle 

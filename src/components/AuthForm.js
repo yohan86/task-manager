@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Box, Button, TextField, Typography } from "@mui/material";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth } from "./firebase";
+import firebaseErrors from "../utils/firebaseErrors";
 
 const AuthForm = () => {
     const [email, setEmail] = useState('');
@@ -13,27 +14,22 @@ const AuthForm = () => {
     const registerPerson = async () => {
         try {
             const createUser = await createUserWithEmailAndPassword(auth, email, password);
-            console.log('done');
             const user = createUser.user;
             if (displayName === null) {
                 setDisplayName(user.email);
             }
-            console.log('usr', user)
             await updateProfile(user, { displayName });
-
-
 
         } catch (error) {
             setError(error.message);
         }
     }
-
     const loginUser = async () => {
         try {
             await signInWithEmailAndPassword(auth, email, password);
-            console.log("user logged In", email)
         } catch (error) {
-            setError(error.message);
+            const errmessage = firebaseErrors(error);
+            setError(errmessage);
         }
     }
     const SubmitForm = () => {
